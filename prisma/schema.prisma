@@ -26,6 +26,7 @@ model User {
 
   @@unique([email])
   @@map("user")
+  Agent Agent[]
 }
 
 model Session {
@@ -38,7 +39,7 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  agents Agent[]
   @@unique([token])
   @@map("session")
 }
@@ -71,4 +72,17 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Agent {
+  id           String   @id @default(uuid()) // You can use cuid() or uuid() depending on nanoid alternative
+  name         String
+  userId       String
+  instructions String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Session Session[]
 }

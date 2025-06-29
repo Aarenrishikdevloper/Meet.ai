@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { TRPCProvider } from "@/trpc/client";
-
+import { Toaster } from 'sonner';
 const inter = Inter({
   subsets:["latin"]
 })
@@ -25,7 +25,9 @@ export default function RootLayout({
       >
         {children}
       </body>
+      
     </html>
+    <Toaster/>
     </TRPCProvider>
   );
 }
