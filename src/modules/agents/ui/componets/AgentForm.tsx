@@ -18,11 +18,12 @@ import { z } from "zod"
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
-import {trpc} from "@/trpc/client"
+
 import { Button } from '@/components/ui/button';
 import { useMutation } from '@tanstack/react-query';
 import { error } from 'console';
 import { toast } from 'sonner';
+import { useTRPC } from '@/trpc/client';
 
 interface AgentProps {
     onSucess?: () => void
@@ -30,28 +31,25 @@ interface AgentProps {
     intialAgents?: "agentOne"
 }
 export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
-    const [loading, setloading] = useState(false)
-    const createAgent = trpc.agents.create.useMutation({
-     onMutate:()=>{
-        setloading(true)
-     },
-        //todo limiting Free itre usage
-        onSuccess:()=>{
-            //ToDo:Invalidating the data  
-            onSucess?.()
-            setloading(false)
-        }, 
-        onError:(error)=>{ 
-            setloading(false)
-            console.log(error) 
-            toast.error("Something went wrong")
-
-        }
-    }) 
+    const trpc = useTRPC();
+   
+   
+    const createAgent = useMutation(
+        trpc.agents.create.mutationOptions({
+            onSuccess:async()=>{
+                onSucess?.()
+            }, 
+            onError:()=>{
+                toast.success("Something went wrong")
+            }
+        }), 
+        
+    )
     const onSubmit =(values:z.infer<typeof agentInsertSchema>)=>{
         createAgent.mutate(values)
+        
     }
-   
+    const pending = createAgent.isPending
     const form = useForm<z.infer<typeof agentInsertSchema>>({
         resolver: zodResolver(agentInsertSchema),
         defaultValues: {
@@ -100,12 +98,12 @@ export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
                 />
                  <div className="flex justify-between gap-x-2">
                     {OnCancel &&(
-                        <Button variant={"ghost"} type='button' onClick={OnCancel} disabled={loading} >
+                        <Button variant={"ghost"} type='button' onClick={OnCancel} disabled={pending} >
                             Cancel
                         </Button> 
                     
                     )} 
-                    <Button type='submit' disabled={loading}> 
+                    <Button type='submit' disabled={pending}> 
                         Create
 
                     </Button>

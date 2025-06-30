@@ -13,5 +13,8 @@ export const agentsRouter = createTRPCRouter({
            }
         })
         return createdAgents
+    }),
+    getAll:protectedProcedure.query(async()=>{
+       return db.agent.findMany()
     })
 })
