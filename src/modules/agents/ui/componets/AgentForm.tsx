@@ -20,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 
 import { Button } from '@/components/ui/button';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { error } from 'console';
 import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
@@ -32,11 +32,14 @@ interface AgentProps {
 }
 export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
     const trpc = useTRPC();
-   
+    const queryClient = useQueryClient()
    
     const createAgent = useMutation(
         trpc.agents.create.mutationOptions({
             onSuccess:async()=>{
+                await queryClient.invalidateQueries(
+                    trpc.agents.getAll.queryOptions()
+                )
                 onSucess?.()
             }, 
             onError:()=>{
