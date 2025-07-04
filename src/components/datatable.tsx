@@ -20,7 +20,7 @@ export function DataTable<TData,Tvalue>({data,columns,onRowClick}:DataTabelProps
                 <TableBody>
                 {table.getRowModel().rows?.length?(
                     table.getRowModel().rows.map((row)=>(  
-                        <TableRow  key={row.id}  className='cursor-pointer' data-state={row.getIsSelected()&& "selected"}>
+                        <TableRow onClick={()=>onRowClick?.(row.original)}  key={row.id}  className='cursor-pointer' data-state={row.getIsSelected()&& "selected"}>
                            {row.getVisibleCells().map((cell)=>(
                             <TableCell key={cell.id} className='text-sm p-4'>  
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
