@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 
-import { agentInsertSchema } from "../schema/schema";
+import { agentInsertSchema, agentsUpdateSchema } from "../schema/schema";
 import { db } from "@/lib/db";
 import {z} from "zod"
 import { TRPCError } from "@trpc/server";
@@ -61,6 +61,22 @@ export const agentsRouter = createTRPCRouter({
         }
        })
        return removeAgents
+    }),
+    update:protectedProcedure.input(agentsUpdateSchema).mutation(async({input,ctx})=>{
+      const updateAgents = await db.agent.update({
+        where:{
+          id:input.id, 
+          userId:ctx.auth.user.id
+        }, 
+        data:{
+          instructions:input.instruction, 
+          name:input.name
+        }
+      })
+      if(!updateAgents){
+        throw new TRPCError({code:"NOT_FOUND", message:"Agent not found"})
+      }
+      return updateAgents
     })
 
 })

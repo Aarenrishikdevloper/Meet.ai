@@ -9,9 +9,10 @@ import React from 'react'
 type props ={
     agentId:string; 
     agentname:string; 
-    onRemove:()=>void
+    onRemove:()=>void, 
+    onEdit:()=>void
 }
-const AgentViewheader = ({agentId,agentname, onRemove}:props) => {
+const AgentViewheader = ({agentId,agentname, onRemove, onEdit}:props) => { 
   return (
     <div className='flex items-center justify-between'>  
         <Breadcrumb> 
@@ -48,7 +49,7 @@ const AgentViewheader = ({agentId,agentname, onRemove}:props) => {
 
             </DropdownMenuTrigger> 
             <DropdownMenuContent align={'end'}> 
-               <DropdownMenuItem>
+               <DropdownMenuItem onClick={onEdit}>
                    <PencilIcon className='size-4 text-black'/> Edit
                </DropdownMenuItem>
                  <DropdownMenuItem onClick={onRemove}>

@@ -21,24 +21,26 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { error } from 'console';
+
 import { toast } from 'sonner';
 import { useTRPC } from '@/trpc/client';
+import { AgentGetOne } from '../../types/type';
 
 interface AgentProps {
     onSucess?: () => void
     OnCancel?: () => void;
-    intialAgents?: "agentOne"
+    intialAgents?: AgentGetOne
 }
 export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
     const trpc = useTRPC();
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient()   
+
    
     const createAgent = useMutation(
         trpc.agents.create.mutationOptions({
             onSuccess:async()=>{
                 await queryClient.invalidateQueries(
-                    trpc.agents.getAll.queryOptions()
+                    trpc.agents.getAll.queryOptions({})
                 )
                 onSucess?.()
             }, 
@@ -48,16 +50,41 @@ export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
         }), 
         
     )
+    const isEdit = !!intialAgents?.id 
+    const updateAgent = useMutation(
+        trpc.agents.update.mutationOptions({
+            onSuccess:async()=>{
+                await queryClient.invalidateQueries(
+                    trpc.agents.getAll.queryOptions({})
+                )
+                if(intialAgents?.id){
+                    await queryClient.invalidateQueries(
+                        trpc.agents.getOne.queryOptions({id:intialAgents.id})
+                    )
+                }
+                onSucess?.()
+            }, 
+            onError:(error)=>{
+                console.log(error)
+               toast.error("Something went wrong")
+            }
+        })
+    )
     const onSubmit =(values:z.infer<typeof agentInsertSchema>)=>{
-        createAgent.mutate(values)
+        if(isEdit){
+           updateAgent.mutate({...values, id:intialAgents.id})
+        }else{
+            createAgent.mutate(values)  
+        }
+
         
     }
-    const pending = createAgent.isPending
+    const pending = createAgent.isPending || updateAgent.isPending
     const form = useForm<z.infer<typeof agentInsertSchema>>({
         resolver: zodResolver(agentInsertSchema),
         defaultValues: {
-            name: "",
-            instruction: ""
+            name:intialAgents?.name ?? "",
+            instruction:intialAgents?.instructions ?? ""
 
 
         },
@@ -107,7 +134,7 @@ export const AgentForm = ({ onSucess, OnCancel, intialAgents }: AgentProps) => {
                     
                     )} 
                     <Button type='submit' disabled={pending}> 
-                        Create
+                        {isEdit ? "Update":"Create"}
 
                     </Button>
                  </div>

@@ -5,7 +5,7 @@ import LoadingSate from '@/components/LoadingSate'
 import { useTRPC } from '@/trpc/client'
 import {  useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
 import { collectSegments } from 'next/dist/build/segment-config/app/app-segments'
-import React from 'react'
+import React, { useState } from 'react'
 import { columns } from '../componets/Column'
 import { useRouter } from 'next/navigation'
 import Emptystate from '@/components/Emptystate'
@@ -16,10 +16,12 @@ import { Badge } from '@/components/ui/badge'
 import { VideoIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useConfirm } from '@/hooks/use-conirm'
+import UpdateAgentDialog from '../componets/UpdateDialog'
 
 
 const AgentIdView = ({agentId}:{agentId:string}) => {
   const trpc = useTRPC() 
+  const [dialogOpen, setDialogOpen] = useState(false)
   const queryClient = useQueryClient()
   const {data} = useSuspenseQuery(
     trpc.agents.getOne.queryOptions({id:agentId})
@@ -50,8 +52,14 @@ const AgentIdView = ({agentId}:{agentId:string}) => {
   return (
     <> 
     <RemoveConfirmation/>
+    <UpdateAgentDialog  
+        open={dialogOpen}   
+        onOpenchange={setDialogOpen}  
+        intialValues={data}
+
+    />
       <div className="flex-1 py-4 md:px-8 flex flex-col gap-y-8">
-         <AgentViewheader agentId={agentId} agentname={data.name} onRemove={handleRemoveAgent}/>
+         <AgentViewheader agentId={agentId} agentname={data.name} onRemove={handleRemoveAgent} onEdit={()=>setDialogOpen(true)}/>
          <div className="bg-white rounded-lg border">
           <div className="px-4 py-5 gap-y-5  flex flex-col col-span-5">
             <div className="flex items-center gap-x-3">
