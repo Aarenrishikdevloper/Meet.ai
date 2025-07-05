@@ -10,6 +10,7 @@ import { columns } from '../componets/Column'
 import { useRouter } from 'next/navigation'
 import Emptystate from '@/components/Emptystate'
 import { useAgentsFilter } from '../../hooks/use-agents-filter'
+import DataPagination from '../componets/dataPagination'
 
 const AgentView = () => {
   const trpc = useTRPC() 
@@ -25,6 +26,11 @@ const AgentView = () => {
          columns={columns}  
          onRowClick={(row)=>router.push(`/agents/${row.id}`)}
 
+       />
+       <DataPagination  
+            page={filters.page} 
+            totalPages={data.totalPages} 
+            onPageChange={(page:number)=>setFilters({page})}
        />
        {data.items.length == 0 && (
          <Emptystate 

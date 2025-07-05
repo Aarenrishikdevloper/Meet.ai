@@ -4,6 +4,7 @@ import { agentInsertSchema, agentsUpdateSchema } from "../schema/schema";
 import { db } from "@/lib/db";
 import {z} from "zod"
 import { TRPCError } from "@trpc/server";
+import { DEFAULT_PAGE_SIZE, DEFAULT_PAGES, MAX_PAGE_Size, MIN_PAGE_Size } from "@/constants";
 export const agentsRouter = createTRPCRouter({
     create:protectedProcedure.input(agentInsertSchema).mutation(async({input,ctx})=>{
         const createdAgents = await db.agent.create({
@@ -16,9 +17,11 @@ export const agentsRouter = createTRPCRouter({
         return createdAgents
     }),
     getAll:protectedProcedure.input(z.object({
+      page:z.number().default(DEFAULT_PAGES), 
+      pageSizes:z.number().min(MIN_PAGE_Size).max(MAX_PAGE_Size).default(DEFAULT_PAGE_SIZE),
       search:z.string().nullish()
     })).query(async({input,ctx})=>{
-      const {search} = input
+      const {search, page, pageSizes} = input
        const data = await db.agent.findMany({
         where:{
           userId:ctx.auth.user.id, 
@@ -32,13 +35,28 @@ export const agentsRouter = createTRPCRouter({
         orderBy:[
           {createdAt:'desc'}, 
           {"id":'desc'}
-        ]
-
-       }) 
+        ], 
+        take:pageSizes,  
+        skip:(page - 1) * pageSizes
+        
+    
+       })
+       const total = await db.agent.count({
+        where:{
+          userId:ctx.auth.user.id, 
+          ...(search && {
+            name:{
+              contains:search, 
+              mode:"insensitive"
+            }
+          })
+        }
+       })
+       const totalPages = Math.ceil(total/pageSizes)
        return{
          items:data, 
-         total:1, 
-         totalPages:1
+         total:total, 
+         totalPages
        }
     }), 
     getOne:protectedProcedure.input(z.object({id:z.string()})).query(async({input,ctx})=>{
