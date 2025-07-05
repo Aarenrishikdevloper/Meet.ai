@@ -13,47 +13,54 @@ import { useAgentsFilter } from '../../hooks/use-agents-filter'
 import DataPagination from '../componets/dataPagination'
 
 const AgentView = () => {
-  const trpc = useTRPC() 
+  const trpc = useTRPC()
   const [filters, setFilters] = useAgentsFilter()
-  const {data} = useSuspenseQuery(
-    trpc.agents.getAll.queryOptions({...filters})
+  const { data } = useSuspenseQuery(
+    trpc.agents.getAll.queryOptions({ ...filters })
   )
   const router = useRouter()
   return (
     <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-       <DataTable   
-         data={data.items}  
-         columns={columns}  
-         onRowClick={(row)=>router.push(`/agents/${row.id}`)}
+      {
+        data.items.length!== 0 && (
 
-       />
-       <DataPagination  
-            page={filters.page} 
-            totalPages={data.totalPages} 
-            onPageChange={(page:number)=>setFilters({page})}
-       />
-       {data.items.length == 0 && (
-         <Emptystate 
-            title='Create your first  agents' 
-            description='Create an agents  to join your  metting>each agent will follow your instruction and  can interact with participants during the call'
-         />
-       )}
+          <>
+            <DataTable
+              data={data.items}
+              columns={columns}
+              onRowClick={(row) => router.push(`/agents/${row.id}`)}
+
+            />
+            <DataPagination
+              page={filters.page}
+              totalPages={data.totalPages}
+              onPageChange={(page: number) => setFilters({ page })}
+            />
+          </>
+        )
+      }
+      {data.items.length == 0 && (
+        <Emptystate
+          title='Create your first  agents'
+          description='Create an agents  to join your  metting>each agent will follow your instruction and  can interact with participants during the call'
+        />
+      )}
     </div>
   )
 }
 
-export default AgentView  
+export default AgentView
 
-export const AgentsViewLoading =()=>{
-  return(
-    <LoadingSate  
-      title='Loading Agents'  
+export const AgentsViewLoading = () => {
+  return (
+    <LoadingSate
+      title='Loading Agents'
       description='This may take few moments'
-    /> 
+    />
   )
 }
-export const AgentViewError=()=>{
-  return(
-    <ErrorSate title='Something  Went Wrong ' description='Please Try Again'/> 
+export const AgentViewError = () => {
+  return (
+    <ErrorSate title='Something  Went Wrong ' description='Please Try Again' />
   )
 }
