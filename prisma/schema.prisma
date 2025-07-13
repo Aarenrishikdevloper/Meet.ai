@@ -27,6 +27,7 @@ model User {
   @@unique([email])
   @@map("user")
   Agent Agent[]
+  Meeting Meeting[]
 }
 
 model Session {
@@ -85,4 +86,32 @@ model Agent {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   Session Session[]
+
+  Meeting Meeting[]
+} 
+enum MeetingStatus {
+  upcoming
+  active
+  completed
+  processing
+  canceled
+}
+
+model Meeting {
+  id           String       @id @default(uuid())
+  name         String
+  userId       String       @map("user_id")
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentId      String       @map("agent_id")
+  agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  status       MeetingStatus @default(upcoming)
+  startedAt    DateTime?    @map("started_at")
+  endedAt      DateTime?    @map("ended_at")
+  transcriptUrl String?     @map("transcript_url")
+  recordingUrl String?      @map("recording_url")
+  summary      String?
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @default(now()) @map("updated_at")
+
+  @@map("meetings")
 }
