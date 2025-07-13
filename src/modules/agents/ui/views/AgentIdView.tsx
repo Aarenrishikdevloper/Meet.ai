@@ -1,15 +1,10 @@
 'use client'
-import { DataTable } from '@/components/datatable'
 import ErrorSate from '@/components/ErrorSate'
 import LoadingSate from '@/components/LoadingSate'
 import { useTRPC } from '@/trpc/client'
-import {  useMutation, useQueryClient, useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query'
-import { collectSegments } from 'next/dist/build/segment-config/app/app-segments'
+import {  useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import React, { useState } from 'react'
-import { columns } from '../componets/Column'
 import { useRouter } from 'next/navigation'
-import Emptystate from '@/components/Emptystate'
-import { useAgentsFilter } from '../../hooks/use-agents-filter'
 import AgentViewheader from '../componets/AgentViewheader'
 import Generateavatar from '@/components/Generate-avatar'
 import { Badge } from '@/components/ui/badge'
@@ -72,7 +67,9 @@ const AgentIdView = ({agentId}:{agentId:string}) => {
             </div>
             < Badge variant={"outline"} className='flex items-center gap-x-2 [&>svg]:size-4'> 
              <VideoIcon className='text-blue-700'/>   
-               1 meeting
+               {data._count.Meeting}{" "}   
+               {data._count.Meeting === 1? "meeting": 'meetings'} 
+
 
             </Badge>
             <div className="flex flex-col gap-y-4">

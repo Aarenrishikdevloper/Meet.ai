@@ -32,12 +32,21 @@ export const agentsRouter = createTRPCRouter({
             }
           })
         }, 
+        include:{
+          _count:{
+            select:{
+              Meeting:true
+            }
+          }
+        },
         orderBy:[
           {createdAt:'desc'}, 
           {"id":'desc'}
         ], 
+        
         take:pageSizes,  
-        skip:(page - 1) * pageSizes
+        skip:(page - 1) * pageSizes  
+
         
     
        })
@@ -64,7 +73,14 @@ export const agentsRouter = createTRPCRouter({
         where:{
           id:input.id,  
           userId:ctx.auth.user.id
-        }
+        },
+         include:{
+          _count:{
+            select:{
+              Meeting:true
+            }
+          }
+        },  
       })
       if(!existinhAgent){
          throw new TRPCError({code:"NOT_FOUND", message:"Agent not found"})

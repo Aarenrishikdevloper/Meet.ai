@@ -32,5 +32,19 @@ export const columns:ColumnDef<AgentGetMany[number]>[] = [
             </div>
         )
     }, 
+    {
+        accessorKey:"_count", 
+        header:"Meetings", 
+        cell:({row})=>(
+           <Badge  variant={"outline"} className='flex items-center [&>svg];size-4'>    
+              <VideoIcon className='text-blue-700'/>  
+
+              {row.original._count.Meeting}{" "}  
+                {row.original._count.Meeting === 1? "meeting": 'meetings'}
+
+           </Badge>
+        )
+            
+    }
   
 ]
