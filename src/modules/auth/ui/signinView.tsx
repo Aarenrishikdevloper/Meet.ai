@@ -7,7 +7,6 @@ import { FaGithub, FaGoogle } from "react-icons/fa"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -125,19 +124,25 @@ const SignInView = () => {
                                         <FaGithub />
 
                                     </Button>
-                                    <Button variant={'outline'} type={'button'} className='w-full'>
+                                    <Button variant={'outline'} type={'button'} className='w-full' onClick={()=>{
+                                           authClient.signIn.social({
+                                                provider: "google",
+                                                callbackURL: '/'
+                                            })
+                                    }}>
                                         <FaGoogle />
 
                                     </Button>
                                 </div>
                                 <div className="text-center text-sm">
-                                    Don't have an account?<Link href={'/sign-up'} className='underline underline-offset-4'> Sign Up</Link>
+                                    Don&apos;t have an account?<Link href={'/sign-up'} className='underline underline-offset-4'> Sign Up</Link>
                                 </div>
                             </div>
                         </form>
 
                     </Form>
                     <div className=" bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
+                        
                         <img src={'/logo.svg'} alt='' className='h-[92px] w-[92px]' />
                         <p className='text-2xl font-semibold text-white'>Meet.AI</p>
                     </div>

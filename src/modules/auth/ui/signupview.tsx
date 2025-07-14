@@ -7,7 +7,6 @@ import {FaGithub, FaGoogle} from "react-icons/fa"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -19,7 +18,6 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
-import { error } from 'console';
 const formSchema = z.object({
     name: z.string().min(1, { message: "Name Is required" }),
     email: z.string().email(),
